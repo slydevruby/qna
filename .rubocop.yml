@@ -1,0 +1,12 @@
+AllCops:
+  NewCops: enable
+  SuggestExtensions: false  
+  Exclude:
+    - 'bin/*'  
+    - 'config/environments/*'  
+    - 'db/schema.rb'  
+Documentation:
+  Enabled: false
+require:
+  - rubocop-erb  
+
