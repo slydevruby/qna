@@ -73,3 +73,5 @@ end
 
 gem 'rubocop', require: false
 gem 'rubocop-erb'
+gem 'slim-rails'
+
