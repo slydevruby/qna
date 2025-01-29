@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 class QuestionsController < ApplicationController
-  before_action :find_question, only: %i[show edit update]
+  before_action :find_question, only: %i[show edit update destroy]
 
   def index
     @questions = Question.all
@@ -27,6 +27,11 @@ class QuestionsController < ApplicationController
     else
       render :edit
     end
+  end
+
+  def destroy
+    @question.destroy
+    redirect_to questions_path
   end
 
   def new

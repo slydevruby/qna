@@ -80,6 +80,19 @@ RSpec.describe QuestionsController, type: :controller do
     end
   end
 
+  describe 'DELETE #destroy' do
+    let!(:new_question) { FactoryBot.create(:question) }
+
+    it 'deletes the question' do
+      expect { delete :destroy, params: { id: new_question } }.to change(Question, :count).by(-1)
+    end
+
+    it 'redirects to index' do
+      delete :destroy, params: { id: new_question }
+      expect(response).to redirect_to questions_path
+    end
+  end
+
   describe 'PATH #update' do
     context 'with valid attributes' do
       it 'assigns the requested question to @question' do
