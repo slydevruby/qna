@@ -1,10 +1,10 @@
 require 'rails_helper'
 
 RSpec.describe QuestionsController, type: :controller do
-  let(:new_question) { create(:question) }
+  let(:new_question) { FactoryBot.create(:question) }
 
   describe 'GET #index' do
-    let(:fab_questions) { create_list(:question, 3) }
+    let(:fab_questions) { FactoryBot.create_list(:question, 3) }
 
     before { get :index }
 
@@ -56,19 +56,60 @@ RSpec.describe QuestionsController, type: :controller do
   describe 'POST #create' do
     context 'with valid attributes' do
       it 'saves created question in database' do
-        count = Question.count
-        # post :create, params: { question: { title: '123', body: '123' } }
-        expect { post :create, params: { question: attributes_for(:question) } }.to change(Question, :count).by(1)
+        expect do
+          post :create, params: { question: FactoryBot.attributes_for(:question) }
+        end.to change(Question, :count).by(1)
       end
 
       it 'redirects to show view' do
+        post :create, params: { question: FactoryBot.attributes_for(:question) }
+        expect(response).to redirect_to assigns(:question)
       end
     end
 
     context 'with invalid attributes' do
       it 'does not save the question' do
+        expect do
+          post :create, params: { question: FactoryBot.attributes_for(:question, :invalid) }
+        end.to_not change(Question, :count)
       end
       it 'rerenders new view' do
+        post :create, params: { question: FactoryBot.attributes_for(:question, :invalid) }
+        expect(response).to render_template :new
+      end
+    end
+  end
+
+  describe 'PATH #update' do
+    context 'with valid attributes' do
+      it 'assigns the requested question to @question' do
+        patch :update, params: { id: new_question, question: FactoryBot.attributes_for(:question) }
+        expect(assigns(:question)).to eq new_question
+      end
+
+      it 'changes question attributes' do
+        patch :update, params: { id: new_question, question: { title: 'new title', body: 'new body' } }
+        new_question.reload
+        expect(new_question.title).to eq 'new title'
+        expect(new_question.body).to eq 'new body'
+      end
+
+      it 'redirects to updated question' do
+        patch :update, params: { id: new_question, question: FactoryBot.attributes_for(:question) }
+        expect(response).to redirect_to new_question
+      end
+    end
+
+    context 'with invalid attributes' do
+      before { patch :update, params: { id: new_question, question: FactoryBot.attributes_for(:question, :invalid) } }
+
+      it 'does not change question' do
+        new_question.reload
+        expect(new_question.title).to eq FactoryBot.attributes_for(:question)[:title]
+        expect(new_question.body).to eq FactoryBot.attributes_for(:question)[:body]
+      end
+      it 'rerender edit view' do
+        expect(response).to render_template :edit
       end
     end
   end

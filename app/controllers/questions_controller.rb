@@ -1,20 +1,34 @@
+# frozen_string_literal: true
+
 class QuestionsController < ApplicationController
-  before_action :find_question, only: [:show, :edit]
+  before_action :find_question, only: %i[show edit update]
 
   def index
     @questions = Question.all
   end
 
-  def show
-  end
+  def show; end
 
-  def edit
-  end
+  def edit; end
 
   def create
-    @question = Question.create(question_params)
+    @question = Question.new(question_params)
+    if @question.save
+      redirect_to @question
+    else
+      render :new
+    end
   end
-  
+
+  def update
+    @question.update(question_params)
+    if @question.save
+      redirect_to @question
+    else
+      render :edit
+    end
+  end
+
   def new
     @question = Question.new
   end
